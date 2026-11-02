@@ -1,37 +1,33 @@
-# Đinh Bộ Lĩnh Lv1 — bộ tạo bằng công cụ ảnh
+# Đinh Bộ Lĩnh Lv1 — vũ khí và tay đồng bộ
 
-[Tải ZIP bộ mới, khoảng 45 MB](https://github.com/DVSoai/design/raw/refs/heads/main/dbl_lv1.zip) · [Xem REPORT và số lần gọi từng mảnh](REPORT.md)
+[**Tải ZIP mới — khoảng 68 MB**](https://github.com/DVSoai/design/raw/refs/heads/main/dbl_lv1.zip) · [**REPORT: góc, kích thước, tay và output script**](REPORT.md)
 
-33 mảnh nhân vật được tạo bằng công cụ tạo ảnh, bám ba mẫu đã duyệt. SVG chỉ dùng cho kiếm và cung. Báo cáo ghi số lần gọi thực tế: 33 lần mới, cộng một lần atlas mẫu gốc dùng chung; mọi mảnh nhân vật đều có ít nhất một lần gọi.
+Kiếm và cung dùng đúng tọa độ bảng khung cùng độ lệch mảnh, không xoay lúc ghép. Kiếm chĩa xuống-trái, cung chéo lên-phải; vũ khí trên thân, lớp ngón tay trên chuôi. Chỉ hiện ở **00–07, 12, 21**.
 
-Bộ xuất có 30 khung × 3 biến thể, hai hướng và hai cỡ. Vũ khí **chỉ hiện ở 00–07, 12, 21**. Những khung còn lại của biến thể kiếm/cung giống tay không theo yêu cầu. Bốn khung lộn dùng bốn ảnh toàn thân được tạo riêng.
+Khung bao nguồn: kiếm **199×117px**, cung **170×258px**; lệch góc so với ảnh hướng dẫn khoảng **0,24° / 2,02°**. Đủ 80 kiểm tra hai hướng, hai cỡ. Cung đứng 00–01 không thấp hơn bàn chân.
 
-ZIP gồm mảnh PNG nền trong 256/128px, raster gốc để xử lý lại, khung ghép, SVG vũ khí, sheet, GIF, công cụ, prompt nguyên văn và báo cáo kiểm tra.
+Đã tạo lại thân **15, 17** và đồng bộ tay **5, 14, 18, 19** bằng công cụ ảnh. Ngưỡng ±12% áp cho độ dày trung bình; diện tích da ghi riêng theo dáng theo lựa chọn của người dùng. Lớp tay cầm riêng chỉ dùng ở biến thể vũ khí. **156 PNG được bảo vệ không đổi**, gồm các mảnh còn lại và toàn bộ lộn 08–11.
 
-## Mẫu đã duyệt
+Thân **16** giữ nguyên; giữa bắp tay trái bị che nên phép đo ghi **N/A**, không coi là Đạt. Các số đo từng bên, diện tích và số lần gọi công cụ ảnh nằm trong REPORT.
 
-![Mẫu đã duyệt](preview/mau_da_duyet.png)
+## Tay đồng bộ và thân đánh
 
-## 33 mảnh nhân vật
+![Tay đồng bộ](preview/tay_dong_bo.png)
 
-![33 mảnh được tạo bằng công cụ ảnh](preview/parts_33.png)
-
-## Bốn mảnh lộn riêng
-
-Mảnh lộn 02 được dùng ở khung 09, có đầu chúc xuống và chân cuộn lên.
-
-![Bốn mảnh lộn](preview/lon_4.png)
-
-Mỗi bảng dưới có 30 khung đánh số 00–29, đọc trái sang phải, trên xuống dưới: 6 cột × 5 hàng, hướng phải.
-
-## Tay không
+## Tay không — 30 khung
 
 ![30 khung tay không](preview/tay_khong_30.png)
 
-## Cầm kiếm
+## Kiếm — 30 khung
 
-![30 khung cầm kiếm](preview/kiem_30.png)
+![30 khung kiếm](preview/kiem_30.png)
 
-## Cầm cung
+## Cung — 30 khung
 
-![30 khung cầm cung](preview/cung_30.png)
+![30 khung cung](preview/cung_30.png)
+
+## Các mảnh nhân vật
+
+![33 mảnh](preview/parts_33.png)
+
+ZIP giữ cấu trúc cũ, có PNG hai cỡ/hướng, SVG vũ khí, raster gốc và lớp tay, sheet, GIF, tools, prompts và REPORT. Ảnh đối chiếu bên ngoài chỉ lưu trong thư mục tạm, không đưa vào ZIP hay repo.
