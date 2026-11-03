@@ -1,312 +1,258 @@
-# Đinh Bộ Lĩnh Lv1 — cung đối xứng, kiếm 200px và mép cổ áo
-
-Mốc đầu vào: `760fdd9b849acaa3999bdf2f3df0f254f2830ba3`. Không dùng Git để lấy nguồn hay đổi phiên bản trong quá trình sửa; Git chỉ dùng để đẩy kết quả. Chỉ đọc hai thư mục nguồn đã được chỉ định để tham khảo hình và bảng số. Gói không chứa ảnh, mã hoặc tên sản phẩm tham khảo.
-
-**Bảo toàn: 284 PNG đối chiếu SHA256, 0 thay đổi.** Toàn bộ 33 mảnh nhân vật (raw, mặt nạ, hai cỡ: 132 file), 120 khung tay không và 32 khung lộn của các biến thể còn lại giữ nguyên từng byte. Màu, nét, tỷ lệ và bốn kiểu lộn không vẽ lại. Các PNG lộn của tay không đã nằm trong nhóm 120, không đếm trùng.
-
-## Vũ khí và cách ghép
-
-- Kiếm: chiều dài toàn bộ theo trục, gồm đốc, **200.109px**, chia chiều cao chuẩn 256px = **0.78168**. Bao alpha >127: **176×101px**. Nén theo trục quanh chuôi, giữ độ rộng vuông góc lưỡi; lưỡi vẫn to bản. Không nhầm chiều rộng bao với chiều dài chéo của kiếm.
-
-- Cung: bao **170×258px**, chuẩn quy đổi 170.015×257.954px. Hai cánh cong đều có chiều dài bằng nhau **175.167px/cánh**, tay cầm tại đúng giữa cung; hai đầu uốn ngược nhẹ. Dây màu kem đậm, dày **3.2px** ở cỡ 256. Script kiểm tra lại độc lập độ dài hai cánh và điểm giữa từ đường nét SVG xuất.
-
-- Tọa độ cơ sở: `x=cx+(dx+pdx)*4*256/131`, `y=cy+(-dy+pdy)*4*256/131`, gốc khung `(320,444)`. Khung 12 dùng ô vũ khí `[1,-9,49]`; khung 21 dùng `[1,-10,46]`. Độ lệch hai loại vũ khí lần lượt `[-4,27]` và `[-10,9]`. Không xoay vũ khí khi ghép.
-
-- Ngoại lệ theo yêu cầu mới: kiếm 12/21 và nắm tay được đưa lên ngực, tại `[151,133]` trong tọa độ thân (phải cổ 23px, dưới cổ 29px). Khung 12 dịch **(-62.325,-66.307)px**, khung 21 dịch **(-62.325,-74.123)px** so với vị trí bảng số. Không ghi nhầm hai khung này là giữ nguyên tọa độ gốc. Tay còn lại giơ lên được giữ từ thân gốc.
-
-- Thứ tự: chân/thân → vũ khí → ngón tay. Với cung, lớp đầu gốc được đặt trên cung; toàn bộ pixel đầu đục đối chiếu chính xác với ảnh gốc ở mọi khung có cung, nên cánh cung/dây không phủ lên mặt. Cung đứng 00/01 có đáy y=427/419, chân y=452/444.
-
-- Vũ khí chỉ hiện 00–07,12,21. Có đủ 30 khung × 3 biến thể × 2 hướng × 2 cỡ = **360 PNG**; các khung không được mang vũ khí đối chiếu pixel với tay không.
-
-## Mép cổ áo và lớp tay cầm
-
-Không sửa mảnh thân gốc. Tách lại alpha các lớp tay cầm đã tạo bằng công cụ ảnh: loại dấu màu, chuôi tạm và mẩu áo lọt vào lớp tay; lấy vùng da nắm tay liên thông cùng viền mực thay cho mặt nạ tròn chứa cả cổ áo. Vùng cổ áo được phục hồi trực tiếp từ raster gốc, tránh ghép các đốm tròn nhỏ tạo răng cưa. Script xác nhận các pixel vùng cổ được bảo vệ khớp chính xác. Đã xem tờ phóng to các khung 00,03,07,12,21 cho cả kiếm và cung.
-
-Kiếm 12/21 tái sử dụng ảnh tay cầm đã tạo `kiem_02`, đăng ký ở ngực; các lớp còn lại dùng ảnh tay cầm đã có cùng khóa. Không tạo hình người bằng SVG, vector hoặc hình khối. Các biến đổi/mặt nạ chỉ xử lý raster ảnh đã tạo, không vẽ RGB cơ thể mới.
-
-## Số đo từng khung có vũ khí
-
-Góc tính từ +x, y hướng xuống: kiếm từ chuôi về mũi; cung từ đầu dưới lên đầu trên. Góc/bao được đo trên **asset đầy đủ trước che khuất**, rồi kiểm tra riêng pixel vũ khí còn nhìn thấy trong ảnh ghép và pixel đầu. Không đo sai trục vì đầu che mất một phần cung. Bao dùng alpha >127. Sai lệch tay–chuôi tính cả làm tròn độc lập gốc hai lớp; cỡ 128 ghi theo hệ tọa độ thu nhỏ. Tỷ lệ kiếm dùng chiều cao chuẩn 256/128px, không dùng chiều cao bao cả vũ khí hay dáng đang nhảy.
-
-Có **80 phép kiểm**, 0 lỗi. Bảng dưới ghi cả hai cỡ cho từng hướng. Đầy đủ tọa độ, độ dịch và tỷ lệ khớp pixel nằm ở `tools/weapon_audit.json`.
-
-| Khung | Loại | Hướng | Góc 256 / 128 (°) | Góc hướng dẫn (°) | Bao 256 / 128 (px) | Dài kiếm / cao người 256 / 128 | Lệch tay–chuôi 256 / 128 (px) | Tay bọc chuôi |
-|---|---|---|---:|---:|---|---:|---:|---|
-| 00 | kiem | phai | 153.711 / 153.869 | 152.182 | 176×101 / 89×50 | 0.7817 / 0.7840 | 0.661 / 0.330 | Có |
-| 00 | kiem | trai | 26.289 / 26.131 | 27.818 | 176×101 / 89×50 | 0.7817 / 0.7840 | 0.661 / 0.330 | Có |
-| 01 | kiem | phai | 153.711 / 153.869 | 152.182 | 176×101 / 89×50 | 0.7817 / 0.7840 | 0.661 / 0.330 | Có |
-| 01 | kiem | trai | 26.289 / 26.131 | 27.818 | 176×101 / 89×50 | 0.7817 / 0.7840 | 0.661 / 0.330 | Có |
-| 02 | kiem | phai | 153.711 / 153.869 | 152.182 | 176×101 / 89×50 | 0.7817 / 0.7840 | 0.299 / 0.150 | Có |
-| 02 | kiem | trai | 26.289 / 26.131 | 27.818 | 176×101 / 89×50 | 0.7817 / 0.7840 | 0.299 / 0.150 | Có |
-| 03 | kiem | phai | 153.711 / 153.869 | 152.182 | 176×101 / 89×50 | 0.7817 / 0.7840 | 0.285 / 0.143 | Có |
-| 03 | kiem | trai | 26.289 / 26.131 | 27.818 | 176×101 / 89×50 | 0.7817 / 0.7840 | 0.285 / 0.143 | Có |
-| 04 | kiem | phai | 153.711 / 153.869 | 152.182 | 176×101 / 89×50 | 0.7817 / 0.7840 | 0.597 / 0.299 | Có |
-| 04 | kiem | trai | 26.289 / 26.131 | 27.818 | 176×101 / 89×50 | 0.7817 / 0.7840 | 0.597 / 0.299 | Có |
-| 05 | kiem | phai | 153.711 / 153.869 | 152.182 | 176×101 / 89×50 | 0.7817 / 0.7840 | 0.295 / 0.147 | Có |
-| 05 | kiem | trai | 26.289 / 26.131 | 27.818 | 176×101 / 89×50 | 0.7817 / 0.7840 | 0.295 / 0.147 | Có |
-| 06 | kiem | phai | 153.711 / 153.869 | 152.182 | 176×101 / 89×50 | 0.7817 / 0.7840 | 0.597 / 0.299 | Có |
-| 06 | kiem | trai | 26.289 / 26.131 | 27.818 | 176×101 / 89×50 | 0.7817 / 0.7840 | 0.597 / 0.299 | Có |
-| 07 | kiem | phai | 153.711 / 153.869 | 152.182 | 176×101 / 89×50 | 0.7817 / 0.7840 | 0.410 / 0.205 | Có |
-| 07 | kiem | trai | 26.289 / 26.131 | 27.818 | 176×101 / 89×50 | 0.7817 / 0.7840 | 0.410 / 0.205 | Có |
-| 12 | kiem | phai | 153.711 / 153.869 | 152.182 | 176×101 / 89×50 | 0.7817 / 0.7840 | 0.540 / 0.270 | Có |
-| 12 | kiem | trai | 26.289 / 26.131 | 27.818 | 176×101 / 89×50 | 0.7817 / 0.7840 | 0.540 / 0.270 | Có |
-| 21 | kiem | phai | 153.711 / 153.869 | 152.182 | 176×101 / 89×50 | 0.7817 / 0.7840 | 0.920 / 0.460 | Có |
-| 21 | kiem | trai | 26.289 / 26.131 | 27.818 | 176×101 / 89×50 | 0.7817 / 0.7840 | 0.920 / 0.460 | Có |
-| 00 | cung | phai | -64.314 / -64.230 | -63.182 | 170×258 / 85×129 | — | 0.490 / 0.245 | Có |
-| 00 | cung | trai | -115.686 / -115.770 | -116.818 | 170×258 / 85×129 | — | 0.490 / 0.245 | Có |
-| 01 | cung | phai | -64.314 / -64.230 | -63.182 | 170×258 / 85×129 | — | 0.490 / 0.245 | Có |
-| 01 | cung | trai | -115.686 / -115.770 | -116.818 | 170×258 / 85×129 | — | 0.490 / 0.245 | Có |
-| 02 | cung | phai | -64.314 / -64.230 | -63.182 | 170×258 / 85×129 | — | 0.551 / 0.275 | Có |
-| 02 | cung | trai | -115.686 / -115.770 | -116.818 | 170×258 / 85×129 | — | 0.551 / 0.275 | Có |
-| 03 | cung | phai | -64.314 / -64.230 | -63.182 | 170×258 / 85×129 | — | 0.201 / 0.100 | Có |
-| 03 | cung | trai | -115.686 / -115.770 | -116.818 | 170×258 / 85×129 | — | 0.201 / 0.100 | Có |
-| 04 | cung | phai | -64.314 / -64.230 | -63.182 | 170×258 / 85×129 | — | 0.436 / 0.218 | Có |
-| 04 | cung | trai | -115.686 / -115.770 | -116.818 | 170×258 / 85×129 | — | 0.436 / 0.218 | Có |
-| 05 | cung | phai | -64.314 / -64.230 | -63.182 | 170×258 / 85×129 | — | 0.437 / 0.219 | Có |
-| 05 | cung | trai | -115.686 / -115.770 | -116.818 | 170×258 / 85×129 | — | 0.437 / 0.219 | Có |
-| 06 | cung | phai | -64.314 / -64.230 | -63.182 | 170×258 / 85×129 | — | 0.436 / 0.218 | Có |
-| 06 | cung | trai | -115.686 / -115.770 | -116.818 | 170×258 / 85×129 | — | 0.436 / 0.218 | Có |
-| 07 | cung | phai | -64.314 / -64.230 | -63.182 | 170×258 / 85×129 | — | 0.669 / 0.335 | Có |
-| 07 | cung | trai | -115.686 / -115.770 | -116.818 | 170×258 / 85×129 | — | 0.669 / 0.335 | Có |
-| 12 | cung | phai | -64.314 / -64.230 | -63.182 | 170×258 / 85×129 | — | 0.992 / 0.496 | Có |
-| 12 | cung | trai | -115.686 / -115.770 | -116.818 | 170×258 / 85×129 | — | 0.992 / 0.496 | Có |
-| 21 | cung | phai | -64.314 / -64.230 | -63.182 | 170×258 / 85×129 | — | 0.216 / 0.108 | Có |
-| 21 | cung | trai | -115.686 / -115.770 | -116.818 | 170×258 / 85×129 | — | 0.216 / 0.108 | Có |
-
-## Tờ kiểm 16 thân
-
-`preview/tay_dong_bo.png`: đủ thân **5–12,14–21**, dùng cùng vùng cắt và tỷ lệ 1.6×, không phóng từng thân theo kích thước riêng. Không cắt mất tay cao của thân 12/20. Số dưới ảnh là số đo ở cỡ nguồn 256px; diện tích da ghi theo dáng. `preview/vu_khi_zoom.png`: 00,03,07,12,21 × kiếm/cung, cùng vùng cắt, phóng đúng 2×.
-
-Các số đo tay được giữ nguyên từ bản đầu vào. Ngưỡng ±12% áp cho độ dày trung bình hai bắp tay đo được theo lựa chọn đã chốt; diện tích da không dùng để loại dáng. **Thân 16 có giữa bắp tay bị che: N/A, không coi là phép đo đạt.** Đây là giới hạn đã có, không vẽ lại mảnh được yêu cầu giữ nguyên.
-
-| Thân | Hai bên (px) | Trung bình (px) | Lệch thân 8 (%) | Diện tích da (px²) | Kết quả |
-|---|---:|---:|---:|---:|---|
-| 5 | 21.83 / 11.00 | 16.42 | -6.86 | 2764 | Đạt |
-| 6 | 20.67 / 15.83 | 18.25 | +3.55 | 2212 | Đạt |
-| 7 | 19.42 / 12.92 | 16.17 | -8.27 | 2546 | Đạt |
-| 8 | 18.42 / 16.83 | 17.62 | +0.00 | 2828 | Đạt |
-| 9 | 18.75 / 13.42 | 16.08 | -8.75 | 2593 | Đạt |
-| 10 | 18.50 / 17.33 | 17.92 | +1.65 | 1994 | Đạt |
-| 11 | 21.17 / 15.42 | 18.29 | +3.78 | 2321 | Đạt |
-| 12 | 21.17 / 18.08 | 19.62 | +11.35 | 3100 | Đạt |
-| 14 | 14.25 / 21.33 | 17.79 | +0.95 | 2363 | Đạt |
-| 15 | 23.08 / 12.42 | 17.75 | +0.71 | 1977 | Đạt |
-| 16 | 9.08 / 13.42 | N/A | N/A | 2203 | N/A — che khuất |
-| 17 | 13.92 / 17.50 | 15.71 | -10.87 | 1716 | Đạt |
-| 18 | 18.50 / 15.92 | 17.21 | -2.36 | 2730 | Đạt |
-| 19 | 18.50 / 15.75 | 17.12 | -2.84 | 2442 | Đạt |
-| 20 | 18.75 / 19.25 | 19.00 | +7.80 | 3008 | Đạt |
-| 21 | 17.42 / 15.00 | 16.21 | -8.04 | 2590 | Đạt |
-
-## Tự soát 30 khung
-
-Có/Không theo kiểm tra pixel/neo và phép đo đã mô tả; cột tay ghi số đo, riêng khung lộn giữ nguyên và thân 16 ghi N/A. Bảng này không thay thế tờ phóng to để duyệt hình.
-
-| Khung | Đầu–cổ | Cỡ áo | Da | Hai chân | Dáng tay | Tay cầm | Hiện vũ khí | Tay cùng cỡ: TB px / diện tích px² |
-|---|---|---|---|---|---|---|---|---|
-| 00 | Có | Có | Có | Có | Có | Có | Có | 16.42 / 2764 |
-| 01 | Có | Có | Có | Có | Có | Có | Có | 16.42 / 2764 |
-| 02 | Có | Có | Có | Có | Có | Có | Có | 18.25 / 2212 |
-| 03 | Có | Có | Có | Có | Có | Có | Có | 16.17 / 2546 |
-| 04 | Có | Có | Có | Có | Có | Có | Có | 17.62 / 2828 |
-| 05 | Có | Có | Có | Có | Có | Có | Có | 16.08 / 2593 |
-| 06 | Có | Có | Có | Có | Có | Có | Có | 17.92 / 1994 |
-| 07 | Có | Có | Có | Có | Có | Có | Có | 18.29 / 2321 |
-| 08 | Có | Có | Có | Có | Có | Có | Có | Lộn giữ nguyên |
-| 09 | Có | Có | Có | Có | Có | Có | Có | Lộn giữ nguyên |
-| 10 | Có | Có | Có | Có | Có | Có | Có | Lộn giữ nguyên |
-| 11 | Có | Có | Có | Có | Có | Có | Có | Lộn giữ nguyên |
-| 12 | Có | Có | Có | Có | Có | Có | Có | 19.62 / 3100 |
-| 13 | Có | Có | Có | Có | Có | Có | Có | 17.79 / 2363 |
-| 14 | Có | Có | Có | Có | Có | Có | Có | 17.75 / 1977 |
-| 15 | Có | Có | Có | Có | Có | Có | Có | N/A (che khuất) / 2203 |
-| 16 | Có | Có | Có | Có | Có | Có | Có | 15.71 / 1716 |
-| 17 | Có | Có | Có | Có | Có | Có | Có | 17.21 / 2730 |
-| 18 | Có | Có | Có | Có | Có | Có | Có | 17.12 / 2442 |
-| 19 | Có | Có | Có | Có | Có | Có | Có | 19.00 / 3008 |
-| 20 | Có | Có | Có | Có | Có | Có | Có | 16.21 / 2590 |
-| 21 | Có | Có | Có | Có | Có | Có | Có | 19.62 / 3100 |
-| 22 | Có | Có | Có | Có | Có | Có | Có | 17.79 / 2363 |
-| 23 | Có | Có | Có | Có | Có | Có | Có | 17.75 / 1977 |
-| 24 | Có | Có | Có | Có | Có | Có | Có | N/A (che khuất) / 2203 |
-| 25 | Có | Có | Có | Có | Có | Có | Có | 15.71 / 1716 |
-| 26 | Có | Có | Có | Có | Có | Có | Có | 17.21 / 2730 |
-| 27 | Có | Có | Có | Có | Có | Có | Có | 17.12 / 2442 |
-| 28 | Có | Có | Có | Có | Có | Có | Có | 19.00 / 3008 |
-| 29 | Có | Có | Có | Có | Có | Có | Có | 16.21 / 2590 |
-
-## Nguồn tạo ảnh và số lần gọi
-
-**Lần sửa hiện tại: 0 lần gọi tạo ảnh mới**, vì yêu cầu giữ nguyên mọi mảnh nhân vật và tay đã đồng bộ. Mọi mảnh đều có nguồn ảnh và lịch sử gọi công cụ từ các bản trước; không có mảnh nhân vật dựng bằng mã. Có 18 nguồn tay cầm đã tạo trước đó, không tạo lại; việc tái sử dụng donor được ghi trong JSON mỗi lớp. Các prompt nguyên văn và log tạo ảnh trước đây vẫn giữ trong `prompts/` và `tools/logs/`.
-
-| Mảnh | Tổng lần tạo ảnh đã ghi nhận | Lần sửa hiện tại |
-|---|---:|---:|
-| 01 | 1 | 0 — giữ nguyên |
-| 02 | 1 | 0 — giữ nguyên |
-| 03 | 1 | 0 — giữ nguyên |
-| 04 | 1 | 0 — giữ nguyên |
-| 05 | 2 | 0 — giữ nguyên |
-| 06 | 1 | 0 — giữ nguyên |
-| 07 | 1 | 0 — giữ nguyên |
-| 08 | 1 | 0 — giữ nguyên |
-| 09 | 1 | 0 — giữ nguyên |
-| 10 | 2 | 0 — giữ nguyên |
-| 11 | 1 | 0 — giữ nguyên |
-| 12 | 2 | 0 — giữ nguyên |
-| 14 | 2 | 0 — giữ nguyên |
-| 15 | 3 | 0 — giữ nguyên |
-| 16 | 1 | 0 — giữ nguyên |
-| 17 | 2 | 0 — giữ nguyên |
-| 18 | 2 | 0 — giữ nguyên |
-| 19 | 2 | 0 — giữ nguyên |
-| 20 | 1 | 0 — giữ nguyên |
-| 21 | 2 | 0 — giữ nguyên |
-| 22 | 1 | 0 — giữ nguyên |
-| 23 | 1 | 0 — giữ nguyên |
-| 24 | 1 | 0 — giữ nguyên |
-| 25 | 1 | 0 — giữ nguyên |
-| 26 | 1 | 0 — giữ nguyên |
-| 27 | 1 | 0 — giữ nguyên |
-| 28 | 1 | 0 — giữ nguyên |
-| 29 | 1 | 0 — giữ nguyên |
-| 30 | 1 | 0 — giữ nguyên |
-| 31 | 1 | 0 — giữ nguyên |
-| 32 | 1 | 0 — giữ nguyên |
-| 33 | 1 | 0 — giữ nguyên |
-| 35 | 1 | 0 — giữ nguyên |
-
-## Output nguyên văn các script trong lần sửa này
-
-Các log cũ giữ làm lịch sử; các log có tiền tố `revision3_` dưới đây là kết quả hiện tại.
-
-### revision3_weapons.txt
+# Đinh Bộ Lĩnh Lv1 — vẽ mới toàn bộ, dùng cấu trúc khung gốc
+Theo yêu cầu mới, toàn bộ mảnh có hình nhân vật đã được tạo mới bằng công cụ ảnh; không giữ lại đầu/thân/chân/lộn từ bản trước. Giữ kích thước canvas, khung bao, số ảnh, bảng tư thế và độ lệch mảnh của cấu trúc gốc. Chỉ thay diện mạo, tóc, mặt và trang phục. Không dựng hình người bằng SVG/vector/code; hai vũ khí dùng SVG tự vẽ.
+Có **32 mảnh nhân vật mới**, qua **36 lần gọi công cụ tạo ảnh**: 3 đầu, 16 thân, 9 chân và 4 dáng lộn. Mảnh 22 là ô điều khiển trong suốt 4×4, không có nhân vật để vẽ; ghi N/A thay vì tạo thêm chân làm sai cấu trúc. `tools/freshness.json` xác nhận 32 ảnh raw đều khác bản trước, không tái sử dụng ảnh nhân vật cũ.
+## Đã xem và đo những gì
+Đã mở trực tiếp ảnh mảnh gốc, phóng lớn để xem dáng, và ghép các mảnh tham khảo bằng bảng số để so với hình mới ở cùng tỷ lệ. Sau đó đối chiếu thêm tờ mảnh/tờ ghép người dùng gửi. **Chưa chạy client để chụp màn hình thực tế.** Các tờ đối chiếu có hình bên ngoài chỉ nằm trong thư mục tạm, không đưa vào gói hoặc repo kết quả.
+Kích thước khung đứng, đo phần có alpha: đầu **83×76**, thân gồm tay **82×43**, chân **58×31**, toàn người **87×131 px**. Đầu chiếm **58.02%** chiều cao, cao **1.767 lần khung bao thân gồm tay**. Chồng đầu–thân **8px**, thân–chân **11px**: `76+43+31−8−11=131`. Không dùng lại tỷ lệ tự đặt 1.3 hoặc ép mọi áo về một chiều cao chung.
+`parts/native/` giữ đúng cỡ gốc của từng ảnh, dùng được như ảnh thay thế theo số; có cả tên vũ khí 262/283. Hai bản 256/128 dùng chung hệ số 256/131 và 128/131. Khung đứng xuất cao đúng 256/128px; các tư thế khác giữ biến thiên chiều cao của bảng gốc, không kéo tất cả về 256px.
+## Ghép và vũ khí
+Ghép trực tiếp `x=cx+(dx+pdx)×4×S`, `y=cy+(−dy+pdy)×4×S`. **Không dịch khớp**, không thêm tay cầm, không xoay vũ khí và không bù riêng khung 12/21. Lật toàn khung để có hướng trái. Bốn mảnh lộn là bốn ảnh được tạo riêng, không xoay ảnh đứng.
+Vũ khí nằm **trước thân** theo tờ ghép người dùng cung cấp. Để giữ mặt không bị che, phần vũ khí qua vùng đầu lấy lại pixel nhân vật tay không dưới mặt nạ đầu; không thay tọa độ vũ khí hay vẽ thêm người. Ở các khung được phép, kiếm/cung giữ nguyên slot và khung bao gốc. Ngoài 00–07,12,21, hai biến thể có vũ khí giống tay không từng pixel.
+Kiếm native: canvas **104×64**, bao **102×60px**; cung native: canvas **108×136**, bao **87×132px**. Tỷ lệ rộng bao kiếm/chiều cao người là `102/131=0.7786`; đây không phải chiều dài chéo theo trục. Không tráo hai phép đo này. Không ép tay vào chuôi để tạo một cấu trúc cầm khác mẫu; sai lệch tay–chuôi ghi **N/A**, không ghi khoảng cách giả bằng 0.
+## Phạm vi kiểm chứng
+Script xác minh chính xác **canvas, khung bao từng mảnh, khung bao toàn bộ 30 tư thế ở cỡ native, tọa độ số, ảnh lật, nguồn tạo ảnh và quy tắc vũ khí**. Khung bao giống nhau không chứng minh đường viền cơ thể trùng từng pixel: đây là ảnh vẽ mới, không phải đổi màu trực tiếp ảnh gốc. Dáng tay/chân và khớp được so bằng ảnh ghép; chưa xác nhận trong client thực tế.
+Đã xem toàn bộ 30 khung tay không, bốn mảnh lộn, và tờ phóng vũ khí 00,03,07,12,21 × kiếm/cung. Không thấy hở cổ/hông hoặc mất giày trong các ảnh đã soát. Tỷ lệ áo/tay của mỗi tư thế theo mảnh riêng; không dùng lại thao tác ép mọi tư thế về thân 8 của bản trước.
+## Số lần tạo ảnh từng mảnh
+| Mảnh | Canvas native | Bao phần có hình native | Lần gọi công cụ ảnh |
+|---|---|---|---:|
+| 01 | [113, 116] | [1, 0, 113, 116] | 1 |
+| 02 | [116, 113] | [0, 1, 116, 113] | 1 |
+| 03 | [113, 116] | [0, 0, 112, 116] | 1 |
+| 04 | [116, 113] | [0, 0, 116, 112] | 1 |
+| 05 | [84, 44] | [0, 0, 82, 43] | 3 |
+| 06 | [60, 40] | [0, 0, 59, 38] | 1 |
+| 07 | [84, 36] | [0, 0, 81, 36] | 1 |
+| 08 | [60, 40] | [0, 0, 60, 38] | 1 |
+| 09 | [76, 36] | [0, 0, 74, 36] | 2 |
+| 10 | [60, 40] | [0, 0, 59, 38] | 1 |
+| 11 | [72, 32] | [0, 0, 70, 31] | 1 |
+| 12 | [104, 64] | [0, 0, 102, 63] | 1 |
+| 14 | [72, 48] | [0, 2, 70, 48] | 1 |
+| 15 | [88, 44] | [0, 0, 87, 43] | 1 |
+| 16 | [52, 44] | [0, 0, 50, 42] | 2 |
+| 17 | [76, 44] | [0, 0, 74, 43] | 1 |
+| 18 | [100, 60] | [0, 1, 97, 60] | 1 |
+| 19 | [100, 48] | [0, 3, 99, 48] | 1 |
+| 20 | [60, 60] | [0, 0, 56, 60] | 1 |
+| 21 | [96, 56] | [0, 1, 96, 55] | 1 |
+| 22 | [4, 4] | N/A — trống | N/A — ô trống |
+| 23 | [60, 32] | [0, 0, 58, 31] | 1 |
+| 24 | [56, 48] | [0, 0, 53, 48] | 1 |
+| 25 | [80, 40] | [0, 0, 78, 38] | 1 |
+| 26 | [56, 40] | [0, 0, 54, 40] | 1 |
+| 27 | [84, 40] | [0, 0, 82, 40] | 1 |
+| 28 | [64, 40] | [0, 0, 63, 39] | 1 |
+| 29 | [44, 56] | [0, 0, 43, 55] | 1 |
+| 30 | [52, 56] | [0, 0, 51, 56] | 1 |
+| 31 | [76, 36] | [0, 0, 74, 36] | 1 |
+| 32 | [84, 76] | [0, 0, 83, 76] | 1 |
+| 33 | [84, 84] | [0, 0, 83, 81] | 1 |
+| 35 | [100, 84] | [6, 0, 97, 82] | 1 |
+Thân 5: ba lần tạo, hai lần đầu bàn tay quá nhỏ; chọn lần ba. Thân 9: hai lần, bỏ bản lộ thêm tay sau. Thân 16: hai lần, bỏ bản tự dựng thêm thân đầy đủ, chọn mảnh tay/áo bị che như mẫu. Các mảnh còn lại một lần. Prompt nguyên văn từng lần thử có trong `prompts/` và log mỗi mảnh; raw là file trực tiếp từ công cụ, có SHA256.
+## Đối chiếu 30 khung
+| Khung | Bao toàn người native (px) | Lệch mép [trái,trên,phải,dưới] | Cổ/hông đã so | Hai giày đã so | Vũ khí đúng slot |
+|---|---|---|---|---|---|
+| 00 | [87, 131] | [0, 0, 0, 0] | Có | Có | Có |
+| 01 | [87, 135] | [0, 0, 0, 0] | Có | Có | Có |
+| 02 | [83, 136] | [0, 0, 0, 0] | Có | Có | Có |
+| 03 | [87, 130] | [0, 0, 0, 0] | Có | Có | Có |
+| 04 | [83, 140] | [0, 0, 0, 0] | Có | Có | Có |
+| 05 | [87, 132] | [0, 0, 0, 0] | Có | Có | Có |
+| 06 | [83, 135] | [0, 0, 0, 0] | Có | Có | Có |
+| 07 | [87, 139] | [0, 0, 0, 0] | Có | Có | Có |
+| 08 | [112, 116] | [0, 0, 0, 0] | Lộn riêng | Có | Có |
+| 09 | [116, 112] | [0, 0, 0, 0] | Lộn riêng | Có | Có |
+| 10 | [112, 116] | [0, 0, 0, 0] | Lộn riêng | Có | Có |
+| 11 | [116, 112] | [0, 0, 0, 0] | Lộn riêng | Có | Có |
+| 12 | [103, 144] | [0, 0, 0, 0] | Có | Có | Có |
+| 13 | [91, 128] | [0, 0, 0, 0] | Có | Có | Có |
+| 14 | [99, 136] | [0, 0, 0, 0] | Có | Có | Có |
+| 15 | [95, 132] | [0, 0, 0, 0] | Có | Có | Có |
+| 16 | [103, 132] | [0, 0, 0, 0] | Có | Có | Có |
+| 17 | [99, 128] | [0, 0, 0, 0] | Có | Có | Có |
+| 18 | [99, 132] | [0, 0, 0, 0] | Có | Có | Có |
+| 19 | [91, 128] | [0, 0, 0, 0] | Có | Có | Có |
+| 20 | [96, 132] | [0, 0, 0, 0] | Có | Có | Có |
+| 21 | [109, 140] | [0, 0, 0, 0] | Có | Có | Có |
+| 22 | [87, 148] | [0, 0, 0, 0] | Có | Có | Có |
+| 23 | [87, 156] | [0, 0, 0, 0] | Có | Có | Có |
+| 24 | [83, 152] | [0, 0, 0, 0] | Có | Có | Có |
+| 25 | [103, 152] | [0, 0, 0, 0] | Có | Có | Có |
+| 26 | [99, 147] | [0, 0, 0, 0] | Có | Có | Có |
+| 27 | [99, 151] | [0, 0, 0, 0] | Có | Có | Có |
+| 28 | [83, 147] | [0, 0, 0, 0] | Có | Có | Có |
+| 29 | [96, 151] | [0, 0, 0, 0] | Có | Có | Có |
+Bốn giá trị lệch mép lần lượt là trái, trên, phải, dưới; toàn bộ bằng 0px. Số này là kiểm tra hình học, không được diễn giải là đường nét ảnh mới giống hệt ảnh cũ.
+## Vũ khí từng khung
+| Khung | Loại | Góc 256 (°) | Góc hướng dẫn (°) | Lệch góc (°) | Bao 256 (px) | Lệch vị trí số (px) | Mặt giữ nguyên |
+|---|---|---:|---:|---:|---|---:|---|
+| 00 | kiem | 151.861 | 152.182 | 0.321 | [199, 117] | 0.000000 | Có |
+| 01 | kiem | 151.861 | 152.182 | 0.321 | [199, 117] | 0.000000 | Có |
+| 02 | kiem | 151.861 | 152.182 | 0.321 | [199, 117] | 0.000000 | Có |
+| 03 | kiem | 151.861 | 152.182 | 0.321 | [199, 117] | 0.000000 | Có |
+| 04 | kiem | 151.861 | 152.182 | 0.321 | [199, 117] | 0.000000 | Có |
+| 05 | kiem | 151.861 | 152.182 | 0.321 | [199, 117] | 0.000000 | Có |
+| 06 | kiem | 151.861 | 152.182 | 0.321 | [199, 117] | 0.000000 | Có |
+| 07 | kiem | 151.861 | 152.182 | 0.321 | [199, 117] | 0.000000 | Có |
+| 12 | kiem | 151.861 | 152.182 | 0.321 | [199, 117] | 0.000000 | Có |
+| 21 | kiem | 151.861 | 152.182 | 0.321 | [199, 117] | 0.000000 | Có |
+| 00 | cung | -64.023 | -63.182 | 0.841 | [170, 258] | 0.000000 | Có |
+| 01 | cung | -64.023 | -63.182 | 0.841 | [170, 258] | 0.000000 | Có |
+| 02 | cung | -64.023 | -63.182 | 0.841 | [170, 258] | 0.000000 | Có |
+| 03 | cung | -64.023 | -63.182 | 0.841 | [170, 258] | 0.000000 | Có |
+| 04 | cung | -64.023 | -63.182 | 0.841 | [170, 258] | 0.000000 | Có |
+| 05 | cung | -64.023 | -63.182 | 0.841 | [170, 258] | 0.000000 | Có |
+| 06 | cung | -64.023 | -63.182 | 0.841 | [170, 258] | 0.000000 | Có |
+| 07 | cung | -64.023 | -63.182 | 0.841 | [170, 258] | 0.000000 | Có |
+| 12 | cung | -64.023 | -63.182 | 0.841 | [170, 258] | 0.000000 | Có |
+| 21 | cung | -64.023 | -63.182 | 0.841 | [170, 258] | 0.000000 | Có |
+`tools/weapon_audit.json` có đủ 80 phép kiểm cho cả hai hướng và hai cỡ. Kiểm tra pixel vũ khí đục còn nhìn thấy so với đúng asset ở vị trí đó; không chỉ dựa vào tọa độ ghi trong báo cáo. Tổng lỗi máy kiểm: 0.
+## Preview và gói tải
+`preview/ty_le_goc.png`: hình mới kèm tỷ lệ đã đo. `preview/parts_33.png`: đủ 33 slot, gồm ô trống 22. `preview/tay_dong_bo.png`: đủ 16 thân tại cùng hệ số phóng. `preview/vu_khi_zoom.png`: 10 ô vũ khí phóng 2×. Có ba tờ 30 khung, tờ tổng hợp hai hướng và GIF chạy/nhảy. Tất cả preview trong gói chỉ chứa hình tự thiết kế.
+## Output nguyên văn các script
+### weapons.txt
 ```text
-WEAPON kiem: bbox=[176, 101]; angle=153.711; reference=152.182; delta=1.529; rotation=0
-WEAPON cung: bbox=[170, 258]; angle=-64.314; reference=-63.182; delta=1.132; rotation=0
-SWORD axial length=200.109px; height=256px; ratio=0.78168; thickness retained.
-BOW equal limbs=175.167px / 175.167px; grip arc fraction=0.5; string=3.2px.
+WEAPON kiem: native canvas=[104, 64]; occupied rectangle=[0, 3, 102, 63]; rotation=0; position correction=[0,0]; front layer.
+WEAPON cung: native canvas=[108, 136]; occupied rectangle=[12, 3, 99, 135]; rotation=0; position correction=[0,0]; front layer.
 ```
 
-### revision3_grips.txt
+### manifest.txt
 ```text
-GRIP kiem_00: side=right; fingers_wrap=True; raster_displacement=[17.07095190724968, -6.757933289237627]; image_calls=1
-GRIP kiem_02: side=right; fingers_wrap=True; raster_displacement=[8.40456197041226, -15.604159490696816]; image_calls=2
-GRIP kiem_03: side=right; fingers_wrap=True; raster_displacement=[-6.735449946110322, 9.27240572702081]; image_calls=1
-GRIP kiem_04: side=right; fingers_wrap=True; raster_displacement=[-35.195360118403926, -13.60646764270254]; image_calls=1
-GRIP kiem_05: side=right; fingers_wrap=True; raster_displacement=[-7.10473131604877, -10.420988043979975]; image_calls=1
-GRIP kiem_06: side=right; fingers_wrap=True; raster_displacement=[2.1178251733473132, -6.687700596878301]; image_calls=1
-GRIP kiem_07: side=right; fingers_wrap=True; raster_displacement=[0.9125768436855992, -5.995755668410311]; image_calls=1
-GRIP kiem_12: side=right; fingers_wrap=True; raster_displacement=[8.613816556491656, 4.0739476180818315]; image_calls=2
-GRIP kiem_21: side=right; fingers_wrap=True; raster_displacement=[8.613816556491656, 4.0739476180818315]; image_calls=2
-GRIP cung_00: side=right; fingers_wrap=True; raster_displacement=[-13.18086960241564, 8.940756646946596]; image_calls=1
-GRIP cung_02: side=left; fingers_wrap=True; raster_displacement=[2.766341602932073, -16.976070468171173]; image_calls=1
-GRIP cung_03: side=left; fingers_wrap=True; raster_displacement=[36.059037797383354, 9.907416658416963]; image_calls=1
-GRIP cung_04: side=left; fingers_wrap=True; raster_displacement=[2.776701966948849, 1.9440031627584347]; image_calls=1
-GRIP cung_05: side=left; fingers_wrap=True; raster_displacement=[4.361705436734539, 0.9953832361752291]; image_calls=1
-GRIP cung_06: side=left; fingers_wrap=True; raster_displacement=[7.670673263140117, 4.0490829340442644]; image_calls=1
-GRIP cung_07: side=right; fingers_wrap=True; raster_displacement=[-31.14013222772485, 1.5443575744563702]; image_calls=1
-GRIP cung_12: side=right; fingers_wrap=True; raster_displacement=[-12.899742786270224, 56.55778328333176]; image_calls=1
-GRIP cung_21: side=right; fingers_wrap=True; raster_displacement=[-9.162981297033951, 50.28077990136745]; image_calls=1
-GRIP LAYERS: original unarmed character pieces left unchanged; frame 01 reuses frame 00 relative pose. Colored markers removed.
+MANIFEST: 32 fresh character images; actual image calls=36; slot22=empty control, not an ungenerated character.
+Native drop-in names: 01–35 as used by the numeric rig; 262/283 weapon aliases also supplied. Three new raw masters saved.
 ```
 
-### revision3_assemble.txt
+### normalize.txt
 ```text
-ASSEMBLE: 30 frames × 3 variants × 2 directions × 2 scales = 360 transparent frame PNGs.
-Weapons visible ONLY at frames 0–7, 12, 21; all other armed-variant frames are identical to unarmed.
-Roll frames 8–11 use four independently image-generated full-body sprites; ZERO character rotation applied.
-Runtime weapon rotation: ZERO. Table positions retained except explicit chest registration for sword 12/21.
-Layer order: legs/body, weapon ABOVE torso, extracted raster fingers; bow under original head to protect face.
-Standing frame alpha height: 256px; standing display exports: exactly 256px and 128px tall.
-Clipped frame count: 0
-Saved both-direction sheet, 3 preview boards, run GIF (5 frames), jump GIF (8 frames).
+PART 01: native_canvas=[113, 116]; native_bbox=[1, 0, 113, 116]; raw_crop=(110, 107, 1112, 1190); correction=[0,0]; NEW_IMAGE_RASTER
+PART 02: native_canvas=[116, 113]; native_bbox=[0, 1, 116, 113]; raw_crop=(119, 101, 1165, 1145); correction=[0,0]; NEW_IMAGE_RASTER
+PART 03: native_canvas=[113, 116]; native_bbox=[0, 0, 112, 116]; raw_crop=(72, 146, 1031, 1238); correction=[0,0]; NEW_IMAGE_RASTER
+PART 04: native_canvas=[116, 113]; native_bbox=[0, 0, 116, 112]; raw_crop=(65, 74, 1113, 1157); correction=[0,0]; NEW_IMAGE_RASTER
+PART 05: native_canvas=[84, 44]; native_bbox=[0, 0, 82, 43]; raw_crop=(1, 1, 1731, 908); correction=[0,0]; NEW_IMAGE_RASTER
+PART 06: native_canvas=[60, 40]; native_bbox=[0, 0, 59, 38]; raw_crop=(139, 55, 1407, 882); correction=[0,0]; NEW_IMAGE_RASTER
+PART 07: native_canvas=[84, 36]; native_bbox=[0, 0, 81, 36]; raw_crop=(55, 22, 1858, 769); correction=[0,0]; NEW_IMAGE_RASTER
+PART 08: native_canvas=[60, 40]; native_bbox=[0, 0, 60, 38]; raw_crop=(115, 49, 1385, 893); correction=[0,0]; NEW_IMAGE_RASTER
+PART 09: native_canvas=[76, 36]; native_bbox=[0, 0, 74, 36]; raw_crop=(24, 23, 1759, 837); correction=[0,0]; NEW_IMAGE_RASTER
+PART 10: native_canvas=[60, 40]; native_bbox=[0, 0, 59, 38]; raw_crop=(103, 72, 1369, 813); correction=[0,0]; NEW_IMAGE_RASTER
+PART 11: native_canvas=[72, 32]; native_bbox=[0, 0, 70, 31]; raw_crop=(20, 20, 1863, 821); correction=[0,0]; NEW_IMAGE_RASTER
+PART 12: native_canvas=[104, 64]; native_bbox=[0, 0, 102, 63]; raw_crop=(40, 9, 1524, 974); correction=[0,0]; NEW_IMAGE_RASTER
+PART 14: native_canvas=[72, 48]; native_bbox=[0, 2, 70, 48]; raw_crop=(116, 63, 1409, 1010); correction=[0,0]; NEW_IMAGE_RASTER
+PART 15: native_canvas=[88, 44]; native_bbox=[0, 0, 87, 43]; raw_crop=(169, 86, 1605, 810); correction=[0,0]; NEW_IMAGE_RASTER
+PART 16: native_canvas=[52, 44]; native_bbox=[0, 0, 50, 42]; raw_crop=(66, 37, 1196, 1110); correction=[0,0]; NEW_IMAGE_RASTER
+PART 17: native_canvas=[76, 44]; native_bbox=[0, 0, 74, 43]; raw_crop=(132, 88, 1494, 856); correction=[0,0]; NEW_IMAGE_RASTER
+PART 18: native_canvas=[100, 60]; native_bbox=[0, 1, 97, 60]; raw_crop=(97, 43, 1557, 939); correction=[0,0]; NEW_IMAGE_RASTER
+PART 19: native_canvas=[100, 48]; native_bbox=[0, 3, 99, 48]; raw_crop=(52, 38, 1745, 859); correction=[0,0]; NEW_IMAGE_RASTER
+PART 20: native_canvas=[60, 60]; native_bbox=[0, 0, 56, 60]; raw_crop=(43, 39, 1130, 1247); correction=[0,0]; NEW_IMAGE_RASTER
+PART 21: native_canvas=[96, 56]; native_bbox=[0, 1, 96, 55]; raw_crop=(55, 65, 1531, 886); correction=[0,0]; NEW_IMAGE_RASTER
+PART 22: native_canvas=[4, 4]; native_bbox=None; raw_crop=None; correction=[0,0]; EMPTY_CONTROL
+PART 23: native_canvas=[60, 32]; native_bbox=[0, 0, 58, 31]; raw_crop=(351, 7, 1394, 915); correction=[0,0]; NEW_IMAGE_RASTER
+PART 24: native_canvas=[56, 48]; native_bbox=[0, 0, 53, 48]; raw_crop=(114, 0, 1222, 1154); correction=[0,0]; NEW_IMAGE_RASTER
+PART 25: native_canvas=[80, 40]; native_bbox=[0, 0, 78, 38]; raw_crop=(79, 12, 1719, 799); correction=[0,0]; NEW_IMAGE_RASTER
+PART 26: native_canvas=[56, 40]; native_bbox=[0, 0, 54, 40]; raw_crop=(240, 5, 1200, 1011); correction=[0,0]; NEW_IMAGE_RASTER
+PART 27: native_canvas=[84, 40]; native_bbox=[0, 0, 82, 40]; raw_crop=(53, 14, 1763, 827); correction=[0,0]; NEW_IMAGE_RASTER
+PART 28: native_canvas=[64, 40]; native_bbox=[0, 0, 63, 39]; raw_crop=(94, 0, 1436, 989); correction=[0,0]; NEW_IMAGE_RASTER
+PART 29: native_canvas=[44, 56]; native_bbox=[0, 0, 43, 55]; raw_crop=(113, 0, 960, 1379); correction=[0,0]; NEW_IMAGE_RASTER
+PART 30: native_canvas=[52, 56]; native_bbox=[0, 0, 51, 56]; raw_crop=(98, 8, 1077, 1295); correction=[0,0]; NEW_IMAGE_RASTER
+PART 31: native_canvas=[76, 36]; native_bbox=[0, 0, 74, 36]; raw_crop=(254, 31, 1506, 856); correction=[0,0]; NEW_IMAGE_RASTER
+PART 32: native_canvas=[84, 76]; native_bbox=[0, 0, 83, 76]; raw_crop=(187, 144, 1146, 1042); correction=[0,0]; NEW_IMAGE_RASTER
+PART 33: native_canvas=[84, 84]; native_bbox=[0, 0, 83, 81]; raw_crop=(112, 118, 1144, 1151); correction=[0,0]; NEW_IMAGE_RASTER
+PART 35: native_canvas=[100, 84]; native_bbox=[6, 0, 97, 82]; raw_crop=(170, 36, 1195, 1082); correction=[0,0]; NEW_IMAGE_RASTER
 ```
 
-### revision3_previews.txt
+### assemble.txt
 ```text
-PREVIEW: tay_dong_bo.png = all 16 torsos 5–12,14–21; common crop / 1.6x scale; per-side thickness, mean, delta and skin area.
-PREVIEW: vu_khi_zoom.png = frames 00,03,07,12,21 × sword/bow; common crop / exactly 2x scale.
+ASSEMBLE: 360 PNG = 30 frames x 3 variants x 2 directions x 2 scales.
+Literal numeric table positions: 100%; per-piece joint corrections=0; extra hand layers=0; runtime rotation=0.
+Layer order: character then weapon in FRONT, matching supplied assembled reference. Weapon crossing face is masked behind the original head; no new hands.
+Four separately image-generated rolling sprites, no standing image rotation; empty slot 22 retained.
+Standing alpha heights: [256, 128]
+Clipped outputs: 0
 ```
 
-### revision3_preservation.txt
+### previews.txt
 ```text
-PRESERVATION: 284 protected PNG files compared to baseline; unauthorized pixel/file changes=0.
-Baseline 760fdd9: ALL 33 character parts (raw, masks, 256/128), ALL unarmed exports and ALL roll exports remain byte-identical.
+PREVIEWS: 33 slots at shared 2x native scale; all 16 torsos; 10 weapon zoom panels at 2x; original-rig proportions illustrated with own artwork only; four-roll and fresh-master previews also replaced.
 ```
 
-### revision3_audit.txt
+### proportions.txt
 ```text
-BOW SVG AUDIT: limbs=175.1561/175.1561px; difference=0.00006px; grip-midpoint error=0.00005px; string=3.2px.
-STANDING 00: bow_bottom=427; feet_bottom=452; PASS=True
-STANDING 01: bow_bottom=419; feet_bottom=444; PASS=True
-WEAPON AUDIT: 80 checks; complete asset geometry + final rendered pixels.
-kiem 00: angle=153.711; reference=152.182; bbox=[176, 101]; axial_length=200.1091650348241; ratio=0.7816764259172816; hand-hilt=0.661px; wrap=True; collar=True; head_match=None; shift=[0.0, 0.0]; PASS=True
-kiem 01: angle=153.711; reference=152.182; bbox=[176, 101]; axial_length=200.1091650348241; ratio=0.7816764259172816; hand-hilt=0.661px; wrap=True; collar=True; head_match=None; shift=[0.0, 0.0]; PASS=True
-kiem 02: angle=153.711; reference=152.182; bbox=[176, 101]; axial_length=200.1091650348241; ratio=0.7816764259172816; hand-hilt=0.299px; wrap=True; collar=True; head_match=None; shift=[0.0, 0.0]; PASS=True
-kiem 03: angle=153.711; reference=152.182; bbox=[176, 101]; axial_length=200.1091650348241; ratio=0.7816764259172816; hand-hilt=0.285px; wrap=True; collar=True; head_match=None; shift=[0.0, 0.0]; PASS=True
-kiem 04: angle=153.711; reference=152.182; bbox=[176, 101]; axial_length=200.1091650348241; ratio=0.7816764259172816; hand-hilt=0.597px; wrap=True; collar=True; head_match=None; shift=[0.0, 0.0]; PASS=True
-kiem 05: angle=153.711; reference=152.182; bbox=[176, 101]; axial_length=200.1091650348241; ratio=0.7816764259172816; hand-hilt=0.295px; wrap=True; collar=True; head_match=None; shift=[0.0, 0.0]; PASS=True
-kiem 06: angle=153.711; reference=152.182; bbox=[176, 101]; axial_length=200.1091650348241; ratio=0.7816764259172816; hand-hilt=0.597px; wrap=True; collar=True; head_match=None; shift=[0.0, 0.0]; PASS=True
-kiem 07: angle=153.711; reference=152.182; bbox=[176, 101]; axial_length=200.1091650348241; ratio=0.7816764259172816; hand-hilt=0.410px; wrap=True; collar=True; head_match=None; shift=[0.0, 0.0]; PASS=True
-kiem 12: angle=153.711; reference=152.182; bbox=[176, 101]; axial_length=200.1091650348241; ratio=0.7816764259172816; hand-hilt=0.540px; wrap=True; collar=True; head_match=None; shift=[-62.32509655895879, -66.30662571564883]; PASS=True
-kiem 21: angle=153.711; reference=152.182; bbox=[176, 101]; axial_length=200.1091650348241; ratio=0.7816764259172816; hand-hilt=0.920px; wrap=True; collar=True; head_match=None; shift=[-62.325096558958734, -74.12341960877859]; PASS=True
-cung 00: angle=-64.314; reference=-63.182; bbox=[170, 258]; axial_length=None; ratio=None; hand-hilt=0.490px; wrap=True; collar=True; head_match=1.0; shift=[0.0, 0.0]; PASS=True
-cung 01: angle=-64.314; reference=-63.182; bbox=[170, 258]; axial_length=None; ratio=None; hand-hilt=0.490px; wrap=True; collar=True; head_match=1.0; shift=[0.0, 5.684341886080802e-14]; PASS=True
-cung 02: angle=-64.314; reference=-63.182; bbox=[170, 258]; axial_length=None; ratio=None; hand-hilt=0.551px; wrap=True; collar=True; head_match=1.0; shift=[0.0, 0.0]; PASS=True
-cung 03: angle=-64.314; reference=-63.182; bbox=[170, 258]; axial_length=None; ratio=None; hand-hilt=0.201px; wrap=True; collar=True; head_match=1.0; shift=[0.0, 0.0]; PASS=True
-cung 04: angle=-64.314; reference=-63.182; bbox=[170, 258]; axial_length=None; ratio=None; hand-hilt=0.436px; wrap=True; collar=True; head_match=1.0; shift=[0.0, 0.0]; PASS=True
-cung 05: angle=-64.314; reference=-63.182; bbox=[170, 258]; axial_length=None; ratio=None; hand-hilt=0.437px; wrap=True; collar=True; head_match=1.0; shift=[0.0, 0.0]; PASS=True
-cung 06: angle=-64.314; reference=-63.182; bbox=[170, 258]; axial_length=None; ratio=None; hand-hilt=0.436px; wrap=True; collar=True; head_match=1.0; shift=[0.0, 0.0]; PASS=True
-cung 07: angle=-64.314; reference=-63.182; bbox=[170, 258]; axial_length=None; ratio=None; hand-hilt=0.669px; wrap=True; collar=True; head_match=1.0; shift=[0.0, 0.0]; PASS=True
-cung 12: angle=-64.314; reference=-63.182; bbox=[170, 258]; axial_length=None; ratio=None; hand-hilt=0.992px; wrap=True; collar=True; head_match=1.0; shift=[0.0, 0.0]; PASS=True
-cung 21: angle=-64.314; reference=-63.182; bbox=[170, 258]; axial_length=None; ratio=None; hand-hilt=0.216px; wrap=True; collar=True; head_match=1.0; shift=[0.0, 5.684341886080802e-14]; PASS=True
+PROPORTIONS: standing native=[87, 131]; head=83x76; torso including arms=82x43; legs=58x31.
+Head/whole height=0.580153; head/torso bbox height=1.767442; overlaps=8/11 native px.
+frame | native width x height | bbox-edge deviation [L,T,R,B]
+00 | [87, 131] | [0, 0, 0, 0]
+01 | [87, 135] | [0, 0, 0, 0]
+02 | [83, 136] | [0, 0, 0, 0]
+03 | [87, 130] | [0, 0, 0, 0]
+04 | [83, 140] | [0, 0, 0, 0]
+05 | [87, 132] | [0, 0, 0, 0]
+06 | [83, 135] | [0, 0, 0, 0]
+07 | [87, 139] | [0, 0, 0, 0]
+08 | [112, 116] | [0, 0, 0, 0]
+09 | [116, 112] | [0, 0, 0, 0]
+10 | [112, 116] | [0, 0, 0, 0]
+11 | [116, 112] | [0, 0, 0, 0]
+12 | [103, 144] | [0, 0, 0, 0]
+13 | [91, 128] | [0, 0, 0, 0]
+14 | [99, 136] | [0, 0, 0, 0]
+15 | [95, 132] | [0, 0, 0, 0]
+16 | [103, 132] | [0, 0, 0, 0]
+17 | [99, 128] | [0, 0, 0, 0]
+18 | [99, 132] | [0, 0, 0, 0]
+19 | [91, 128] | [0, 0, 0, 0]
+20 | [96, 132] | [0, 0, 0, 0]
+21 | [109, 140] | [0, 0, 0, 0]
+22 | [87, 148] | [0, 0, 0, 0]
+23 | [87, 156] | [0, 0, 0, 0]
+24 | [83, 152] | [0, 0, 0, 0]
+25 | [103, 152] | [0, 0, 0, 0]
+26 | [99, 147] | [0, 0, 0, 0]
+27 | [99, 151] | [0, 0, 0, 0]
+28 | [83, 147] | [0, 0, 0, 0]
+29 | [96, 151] | [0, 0, 0, 0]
+PROPORTION FAILURES: 0
+```
+
+### weapon_audit.txt
+```text
+WEAPON AUDIT: 80 frame/variant/direction/scale checks; fixed original numeric positions and rectangles.
+kiem 00: angle=151.861; ref=152.182; delta=0.321; bbox=[199, 117]; position_error=0.000000; face=True; visible_pixel_match=1.000000; pass=True
+kiem 01: angle=151.861; ref=152.182; delta=0.321; bbox=[199, 117]; position_error=0.000000; face=True; visible_pixel_match=1.000000; pass=True
+kiem 02: angle=151.861; ref=152.182; delta=0.321; bbox=[199, 117]; position_error=0.000000; face=True; visible_pixel_match=1.000000; pass=True
+kiem 03: angle=151.861; ref=152.182; delta=0.321; bbox=[199, 117]; position_error=0.000000; face=True; visible_pixel_match=1.000000; pass=True
+kiem 04: angle=151.861; ref=152.182; delta=0.321; bbox=[199, 117]; position_error=0.000000; face=True; visible_pixel_match=1.000000; pass=True
+kiem 05: angle=151.861; ref=152.182; delta=0.321; bbox=[199, 117]; position_error=0.000000; face=True; visible_pixel_match=1.000000; pass=True
+kiem 06: angle=151.861; ref=152.182; delta=0.321; bbox=[199, 117]; position_error=0.000000; face=True; visible_pixel_match=1.000000; pass=True
+kiem 07: angle=151.861; ref=152.182; delta=0.321; bbox=[199, 117]; position_error=0.000000; face=True; visible_pixel_match=1.000000; pass=True
+kiem 12: angle=151.861; ref=152.182; delta=0.321; bbox=[199, 117]; position_error=0.000000; face=True; visible_pixel_match=1.000000; pass=True
+kiem 21: angle=151.861; ref=152.182; delta=0.321; bbox=[199, 117]; position_error=0.000000; face=True; visible_pixel_match=1.000000; pass=True
+cung 00: angle=-64.023; ref=-63.182; delta=0.841; bbox=[170, 258]; position_error=0.000000; face=True; visible_pixel_match=1.000000; pass=True
+cung 01: angle=-64.023; ref=-63.182; delta=0.841; bbox=[170, 258]; position_error=0.000000; face=True; visible_pixel_match=1.000000; pass=True
+cung 02: angle=-64.023; ref=-63.182; delta=0.841; bbox=[170, 258]; position_error=0.000000; face=True; visible_pixel_match=1.000000; pass=True
+cung 03: angle=-64.023; ref=-63.182; delta=0.841; bbox=[170, 258]; position_error=0.000000; face=True; visible_pixel_match=1.000000; pass=True
+cung 04: angle=-64.023; ref=-63.182; delta=0.841; bbox=[170, 258]; position_error=0.000000; face=True; visible_pixel_match=1.000000; pass=True
+cung 05: angle=-64.023; ref=-63.182; delta=0.841; bbox=[170, 258]; position_error=0.000000; face=True; visible_pixel_match=1.000000; pass=True
+cung 06: angle=-64.023; ref=-63.182; delta=0.841; bbox=[170, 258]; position_error=0.000000; face=True; visible_pixel_match=1.000000; pass=True
+cung 07: angle=-64.023; ref=-63.182; delta=0.841; bbox=[170, 258]; position_error=0.000000; face=True; visible_pixel_match=1.000000; pass=True
+cung 12: angle=-64.023; ref=-63.182; delta=0.841; bbox=[170, 258]; position_error=0.000000; face=True; visible_pixel_match=1.000000; pass=True
+cung 21: angle=-64.023; ref=-63.182; delta=0.841; bbox=[170, 258]; position_error=0.000000; face=True; visible_pixel_match=1.000000; pass=True
+Hand-hilt error: N/A; no extra grip layers and no invented zero-distance claim.
 WEAPON AUDIT FAILURES: 0
 ```
 
-### revision3_validate.txt
+### validate.txt
 ```text
-VALIDATE: 33 image-generated character parts; ZERO parts with 0 image-tool calls.
-Inherited image-tool invocations (no new character generation in this revision): torso=7, additional grip layers=20.
-Character SVG count: 0. Weapon SVG count: 2. Four roll source images have different SHA256 hashes.
-Frame PNG count: 360; both directions and scales present. GIF frame counts: 5 / 8.
-Weapon visibility: only 00–07, 12, 21; forbidden frames compared byte-for-byte to unarmed pixels.
-frame neck size skin feet arms grip visibility bounds mirror image_tool | biceps_mean_px skin_area_px2 arm_size_result
-00 YES YES YES YES YES YES YES YES YES YES | 16.416666666666664 2764 PASS
-01 YES YES YES YES YES YES YES YES YES YES | 16.416666666666664 2764 PASS
-02 YES YES YES YES YES YES YES YES YES YES | 18.25 2212 PASS
-03 YES YES YES YES YES YES YES YES YES YES | 16.166666666666668 2546 PASS
-04 YES YES YES YES YES YES YES YES YES YES | 17.625 2828 PASS
-05 YES YES YES YES YES YES YES YES YES YES | 16.083333333333332 2593 PASS
-06 YES YES YES YES YES YES YES YES YES YES | 17.916666666666664 1994 PASS
-07 YES YES YES YES YES YES YES YES YES YES | 18.291666666666668 2321 PASS
-08 YES YES YES YES YES YES YES YES YES YES | ROLL_PRESERVED
-09 YES YES YES YES YES YES YES YES YES YES | ROLL_PRESERVED
-10 YES YES YES YES YES YES YES YES YES YES | ROLL_PRESERVED
-11 YES YES YES YES YES YES YES YES YES YES | ROLL_PRESERVED
-12 YES YES YES YES YES YES YES YES YES YES | 19.625 3100 PASS
-13 YES YES YES YES YES YES YES YES YES YES | 17.791666666666664 2363 PASS
-14 YES YES YES YES YES YES YES YES YES YES | 17.75 1977 PASS
-15 YES YES YES YES YES YES YES YES YES YES | None 2203 NOT_MEASURABLE_OCCLUDED
-16 YES YES YES YES YES YES YES YES YES YES | 15.708333333333332 1716 PASS
-17 YES YES YES YES YES YES YES YES YES YES | 17.208333333333332 2730 PASS
-18 YES YES YES YES YES YES YES YES YES YES | 17.125 2442 PASS
-19 YES YES YES YES YES YES YES YES YES YES | 19.0 3008 PASS
-20 YES YES YES YES YES YES YES YES YES YES | 16.208333333333336 2590 PASS
-21 YES YES YES YES YES YES YES YES YES YES | 19.625 3100 PASS
-22 YES YES YES YES YES YES YES YES YES YES | 17.791666666666664 2363 PASS
-23 YES YES YES YES YES YES YES YES YES YES | 17.75 1977 PASS
-24 YES YES YES YES YES YES YES YES YES YES | None 2203 NOT_MEASURABLE_OCCLUDED
-25 YES YES YES YES YES YES YES YES YES YES | 15.708333333333332 1716 PASS
-26 YES YES YES YES YES YES YES YES YES YES | 17.208333333333332 2730 PASS
-27 YES YES YES YES YES YES YES YES YES YES | 17.125 2442 PASS
-28 YES YES YES YES YES YES YES YES YES YES | 19.0 3008 PASS
-29 YES YES YES YES YES YES YES YES YES YES | 16.208333333333336 2590 PASS
-ARM MIDPOINT NOT MEASURABLE: [16] (covered by forearm/wrist wrap; preserved original, not a passing thickness result).
+VALIDATE: 32 newly image-generated character parts + one truly empty control slot 22.
+All 33 native canvases and occupied rectangles match numeric source geometry exactly.
+Generation invocations recorded: 36; character vector/SVG count=0; weapon SVG count=2.
+360 transparent frame PNGs; literal rig positions; zero per-part assembly correction; zero extra hand layers; left mirrors verified.
+Weapon-free frame variants match unarmed pixels; independent roll sources verified; no clipped output.
+VISUAL LIMIT: exact bounding rectangles are not proof of identical anatomical silhouettes. See visual review table and comparison log.
 FAILURES: 0
 ```
 
-### revision3_package.txt
+### package.txt
 ```text
-PACKAGE: 786 files; 360 frame PNGs; 33 main character rasters; 18 image-generated grip sources; 2 weapon SVGs; ZIP CRC PASS.
-Reference-image comparison boards excluded. One occluded biceps midpoint (torso 16) remains explicitly N/A in the report.
+PACKAGE: 659 files; 360 frame PNGs; 32 newly generated character sources + 1 empty rig slot; native/256/128 parts; ZIP CRC PASS.
+Only own original character/weapon artwork included; all external pose comparison pictures remain outside the package.
 ```
+
